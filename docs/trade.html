@@ -5,41 +5,71 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>🤖 Trade For Me - AI Crypto Bot</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/akinola566/Stylesmcbot/docs/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;900&display=swap" rel="stylesheet">
   <style>
-    body { padding-bottom: 70px; }
-    .centered { max-width:440px;margin:32px auto; }
-    .trade-progress-chart { height: 28px; width: 100%; background: #222; border-radius: 14px; overflow: hidden; }
+    body { background: #181c22; font-family: 'Poppins',sans-serif; padding-bottom: 80px; }
+    .main-container { max-width: 420px; margin: 44px auto 0 auto; }
+    .trade-card {
+      background: rgba(44, 62, 80, 0.86);
+      border-radius: 20px;
+      box-shadow: 0 4px 32px #0004;
+      padding: 32px 24px 28px 24px;
+      margin-bottom: 28px;
+      color: #fff;
+    }
+    .trade-card h1, .trade-card h2 { margin-top: 0; color: #00ff88; }
+    .trade-label { font-weight: 600; margin-bottom: 8px; display:inline-block;}
+    .trade-input, .trade-select {
+      width: 90%; padding: 10px 14px; border-radius: 8px; border: 1px solid #333; font-size: 1em; margin-bottom: 16px; background: #23272f; color: #fff;
+    }
+    .trade-action-btn { width:100%; font-size:1.13em; margin-top: 10px;}
+    .trade-progress-chart { height: 28px; width: 100%; background: #242a32; border-radius: 14px; overflow: hidden; margin: 18px 0 4px 0; }
     .trade-progress-fill { height:100%; width:0%; background: linear-gradient(90deg,#00ff88,#42a1fa); transition:width 0.7s;}
-    .stat-block { margin:24px 0; padding:18px 0; border-radius:14px; background:rgba(0,0,0,0.12); }
-    .big-profit { font-size:2em; color:#00ff88; font-weight:bold; }
+    .trade-profit { font-size:1.3em; color:#00ff88; font-weight:bold; }
+    .trade-timer { font-size:0.98em; color:#aaa; margin-top: 8px; }
+    .trade-status-msg { margin:18px 0 0 0; color:#fff; font-weight: 600;}
+    .small-card { background:rgba(30,34,40,0.7); border-radius: 16px; padding: 16px 12px; margin-bottom: 18px;}
+    .history-table { width:100%; margin-top: 10px; font-size: 0.98em; }
+    .history-table th, .history-table td { padding: 7px 4px; border-bottom: 1px solid #444; }
+    @media (max-width:600px) {
+      .main-container { max-width:99vw; padding: 0 0.5em; }
+      .trade-card { padding: 20px 6vw 18px 6vw; }
+    }
   </style>
 </head>
 <body>
-  <div class="centered">
-    <h1>🤖 Trade For Me</h1>
-    <div id="trade-status"></div>
-    <!-- Trade control UI -->
-    <div id="trade-control" style="margin-top:30px;">
-      <label>Trade Amount ($):</label>
-      <input type="number" id="trade-amount" min="1" max="1000" value="100" style="margin:0 0 8px 0;padding:8px;width:80%;border-radius:6px;border:1px solid #888;"><br>
-      <label>Asset:</label>
-      <select id="trade-asset" style="margin:0 0 14px 0; padding:8px;width:80%;border-radius:6px;border:1px solid #888;">
-        <option value="BTC">BTC</option>
-        <option value="USDT">USDT</option>
-      </select><br>
-      <button id="start-trade-btn" class="neon-btn start-btn" style="width:80%;margin-bottom:10px;">Start Trade</button>
-    </div>
-    <div id="live-trade" style="display:none;">
-      <div class="stat-block">
-        <div>Trading <span id="live-asset"></span> for <span id="live-amount"></span>$</div>
-        <div id="trade-timer"></div>
+  <div class="main-container">
+    <div class="trade-card">
+      <h1 style="font-size:2em;">🤖 Trade For Me</h1>
+      <div id="trade-status"></div>
+      <!-- Trade control UI -->
+      <div id="trade-control">
+        <label class="trade-label">Trade Amount ($):</label><br>
+        <input type="number" id="trade-amount" min="1" max="1000" value="100" class="trade-input"><br>
+        <label class="trade-label">Asset:</label><br>
+        <select id="trade-asset" class="trade-select">
+          <option value="BTC">BTC</option>
+          <option value="USDT">USDT</option>
+        </select><br>
+        <button id="start-trade-btn" class="neon-btn start-btn trade-action-btn">Start Trade</button>
       </div>
-      <div class="trade-progress-chart"><div id="trade-progress" class="trade-progress-fill"></div></div>
-      <div id="live-profit" class="big-profit">Profit: $0.00</div>
-      <div id="trade-status-msg" style="margin-top:14px;"></div>
-      <button id="stop-trade-btn" class="neon-btn stop-btn" style="margin-top:24px;">Stop Trade</button>
+      <div id="live-trade" style="display:none;">
+        <div class="small-card" style="margin-bottom:18px;">
+          <div>Trading <b><span id="live-asset"></span></b> for <b><span id="live-amount"></span>$</b></div>
+          <div class="trade-timer" id="trade-timer"></div>
+        </div>
+        <div class="trade-progress-chart">
+          <div id="trade-progress" class="trade-progress-fill"></div>
+        </div>
+        <div id="live-profit" class="trade-profit">Profit: $0.00</div>
+        <div id="trade-status-msg" class="trade-status-msg"></div>
+        <button id="stop-trade-btn" class="neon-btn stop-btn trade-action-btn" style="margin-top:22px;">Stop Trade</button>
+      </div>
     </div>
-    <div id="trade-history" style="margin-top:40px;"></div>
+    <div class="trade-card" style="padding:22px 16px 14px 16px;">
+      <h2 style="color:#42a1fa;">Trade History</h2>
+      <div id="trade-history"></div>
+    </div>
   </div>
   <!-- Bottom Navigation Bar -->
   <nav id="bottom-nav" style="position:fixed;left:0;right:0;bottom:0;height:60px;background:rgba(30,34,40,0.98);box-shadow:0 -2px 16px #0003;display:flex;align-items:center;justify-content:space-evenly;z-index:2000;">
@@ -158,16 +188,16 @@
     }
     function showHistory(){
       const history = getTradeHistory();
-      let html = "<h3>Trade History</h3>";
-      if(history.length === 0) html += "<div>No trades yet.</div>";
-      else html += "<table style='width:100%;margin-top:12px;font-size:0.98em;'><tr><th>Asset</th><th>Amount($)</th><th>Profit($)</th><th>Ended</th></tr>"+
+      let html = "";
+      if(history.length === 0) html += "<div style='color:#888;'>No trades yet.</div>";
+      else html += "<table class='history-table'><tr><th>Asset</th><th>Amount($)</th><th>Profit($)</th><th>Ended</th></tr>"+
       history.slice(0,10).map(t=>{
         let d = new Date(t.ended||t.started);
         return `<tr>
           <td>${t.asset}</td>
           <td>${t.amount}</td>
-          <td>${t.profit.toFixed(2)}</td>
-          <td>${d.toLocaleString()}</td>
+          <td style="color:${t.profit>=0?'#00ff88':'#ff4757'}">${t.profit.toFixed(2)}</td>
+          <td style="color:#aaa">${d.toLocaleString()}</td>
         </tr>`;
       }).join("")+"</table>";
       document.getElementById("trade-history").innerHTML = html;
@@ -209,4 +239,4 @@
     });
   </script>
 </body>
-  </html>
+</html>
