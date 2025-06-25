@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🤖 Trade For Me - AI Crypto Bot</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/akinola566/Stylesmcbot/docs/style.css">
+  <style>
+    body { padding-bottom: 70px; }
+    .centered { max-width:440px;margin:32px auto; }
+    .trade-progress-chart { height: 28px; width: 100%; background: #222; border-radius: 14px; overflow: hidden; }
+    .trade-progress-fill { height:100%; width:0%; background: linear-gradient(90deg,#00ff88,#42a1fa); transition:width 0.7s;}
+    .stat-block { margin:24px 0; padding:18px 0; border-radius:14px; background:rgba(0,0,0,0.12); }
+    .big-profit { font-size:2em; color:#00ff88; font-weight:bold; }
+  </style>
+</head>
+<body>
+  <div class="centered">
+    <h1>🤖 Trade For Me</h1>
+    <div id="trade-status"></div>
+    <!-- Trade control UI -->
+    <div id="trade-control" style="margin-top:30px;">
+      <label>Trade Amount ($):</label>
+      <input type="number" id="trade-amount" min="1" max="1000" value="100" style="margin:0 0 8px 0;padding:8px;width:80%;border-radius:6px;border:1px solid #888;"><br>
+      <label>Asset:</label>
+      <select id="trade-asset" style="margin:0 0 14px 0; padding:8px;width:80%;border-radius:6px;border:1px solid #888;">
+        <option value="BTC">BTC</option>
+        <option value="USDT">USDT</option>
+      </select><br>
+      <button id="start-trade-btn" class="neon-btn start-btn" style="width:80%;margin-bottom:10px;">Start Trade</button>
+    </div>
+    <div id="live-trade" style="display:none;">
+      <div class="stat-block">
+        <div>Trading <span id="live-asset"></span> for <span id="live-amount"></span>$</div>
+        <div id="trade-timer"></div>
+      </div>
+      <div class="trade-progress-chart"><div id="trade-progress" class="trade-progress-fill"></div></div>
+      <div id="live-profit" class="big-profit">Profit: $0.00</div>
+      <div id="trade-status-msg" style="margin-top:14px;"></div>
+      <button id="stop-trade-btn" class="neon-btn stop-btn" style="margin-top:24px;">Stop Trade</button>
+    </div>
+    <div id="trade-history" style="margin-top:40px;"></div>
+  </div>
+  <!-- Bottom Navigation Bar -->
+  <nav id="bottom-nav" style="position:fixed;left:0;right:0;bottom:0;height:60px;background:rgba(30,34,40,0.98);box-shadow:0 -2px 16px #0003;display:flex;align-items:center;justify-content:space-evenly;z-index:2000;">
+    <button id="nav-trade" title="Trade For Me" style="background:none;border:none;outline:none;font-size:2em;color:#00ff88;">🤖</button>
+    <button id="nav-menu" title="Menu" style="background:none;border:none;outline:none;font-size:2em;color:#fff;">&#9776;</button>
+  </nav>
+  <div id="nav-modal" style="display:none;position:fixed;left:0;top:0;width:100vw;height:100vh;z-index:2100;
+    background:rgba(0,0,0,0.65);align-items:flex-end;justify-content:center;">
+    <div style="background:#23272f;color:#fff;width:100vw;max-width:350px;margin:auto;border-radius:18px 18px 0 0;padding:32px 0 24px 0;text-align:center;box-shadow:0 -2px 16px #0006;">
+      <h2 style="margin-bottom:18px;">Menu</h2>
+      <a href="index.html" style="display:block;padding:10px 0;color:#00ff88;text-decoration:none;font-size:1.15em;">🏠 Home</a>
+      <a href="trade.html" style="display:block;padding:10px 0;color:#00ff88;text-decoration:none;font-size:1.15em;">🤖 Trade For Me</a>
+      <a href="dashboard.html" style="display:block;padding:10px 0;color:#00ff88;text-decoration:none;font-size:1.15em;">📊 Dashboard</a>
+      <a href="#" id="nav-modal-close" style="display:block;padding:10px 0;margin-top:8px;color:#ff4757;text-decoration:none;font-size:1.15em;">Close</a>
+    </div>
+  </div>
+  <script>
+    // Navigation bar logic
+    document.getElementById('nav-trade').onclick = () => window.location.href = "trade.html";
+    document.getElementById('nav-menu').onclick = () => document.getElementById('nav-modal').style.display = "flex";
+    document.getElementById('nav-modal-close').onclick = (e) => { e.preventDefault(); document.getElementById('nav-modal').style.display = "none"; };
+    document.getElementById('nav-modal').onclick = function(e) { if(e.target === this) this.style.display = "none"; };
+
+    // Trade For Me logic
+    const TRADE_KEY = "active_advanced_trade";
+    const TRADE_HISTORY_KEY = "trade_history";
+    let tradeInterval = null, timerInterval = null, tradeState = null;
+
+    function saveTradeState(state) { localStorage.setItem(TRADE_KEY, JSON.stringify(state)); }
+    function getTradeState() { return JSON.parse(localStorage.getItem(TRADE_KEY)||"null"); }
+    function clearTradeState() { localStorage.removeItem(TRADE_KEY); }
+    function saveTradeHistory(trade) {
+      let history = JSON.parse(localStorage.getItem(TRADE_HISTORY_KEY)||"[]");
+      history.unshift(trade);
+      if(history.length > 50) history = history.slice(0,50);
+      localStorage.setItem(TRADE_HISTORY_KEY, JSON.stringify(history));
+    }
+    function getTradeHistory() {
+      return JSON.parse(localStorage.getItem(TRADE_HISTORY_KEY)||"[]");
+    }
+
+    function setStatus(msg) { document.getElementById("trade-status-msg").textContent = msg; }
+    function updateTradePanel() {
+      if(!tradeState) return;
+      document.getElementById('live-trade').style.display = "block";
+      document.getElementById('trade-control').style.display = "none";
+      document.getElementById('live-asset').textContent = tradeState.asset;
+      document.getElementById('live-amount').textContent = tradeState.amount;
+      document.getElementById('live-profit').textContent = "Profit: $" + tradeState.profit.toFixed(2);
+      document.getElementById('trade-progress').style.width = `${tradeState.progress}%`;
+      setStatus(tradeState.progress<100?`Trading in progress...`:"Trade finished!");
+    }
+    function startTradeTimer() {
+      const timerEl = document.getElementById("trade-timer");
+      timerInterval = setInterval(()=> {
+        if(tradeState && tradeState.running){
+          let elapsed = Date.now()-tradeState.started;
+          let left = Math.max(0, 24*60*60*1000 - elapsed);
+          let h = Math.floor(left/(1000*60*60)), m=Math.floor((left/(1000*60))%60), s=Math.floor((left/1000)%60);
+          timerEl.textContent = `Time left: ${h}h ${m}m ${s}s`;
+        }
+      },1000);
+    }
+    function stopTradeTimer() {clearInterval(timerInterval);}
+    function startTrade(amount, asset) {
+      stopTrade();
+      tradeState = {
+        started: Date.now(),
+        amount: amount,
+        asset: asset,
+        profit: 0,
+        progress: 0,
+        running: true
+      };
+      saveTradeState(tradeState);
+      updateTradePanel();
+      startTradeTimer();
+      tradeInterval = setInterval(() => {
+        if(!tradeState.running) return;
+        // Progress simulation: up to 24h, but finish if progress hits 100%
+        let elapsed = Date.now()-tradeState.started;
+        tradeState.progress = Math.min(100, (elapsed/(24*60*60*10)) ); // 24h = 100%
+        if(tradeState.progress >= 100) tradeState.progress = 100;
+        // Profit simulation
+        let direction = Math.random() > 0.15 ? 1 : -1; // 85% up, 15% down tick
+        let tick = tradeState.amount * (Math.random()*0.002*direction);
+        tradeState.profit += tick;
+        if(tradeState.profit<0) tradeState.profit=0;
+        saveTradeState(tradeState);
+        updateTradePanel();
+        // Stop if time > 24h or progress 100%
+        if(tradeState.progress>=100 || (Date.now()-tradeState.started) > 24*60*60*1000){
+          tradeState.running = false;
+          saveTradeState(tradeState);
+          setStatus("Trade finished! Press 'Stop Trade' to end.");
+          clearInterval(tradeInterval);
+          stopTradeTimer();
+        }
+      }, 1800);
+    }
+    function stopTrade() {
+      clearInterval(tradeInterval); clearInterval(timerInterval);
+      if(tradeState){
+        document.getElementById('live-trade').style.display = "none";
+        document.getElementById('trade-control').style.display = "block";
+        if(!tradeState.running || tradeState.progress>=100){
+          setStatus(`Trade completed! Final profit: $${tradeState.profit.toFixed(2)}`);
+          saveTradeHistory({...tradeState, ended: Date.now()});
+        }else{
+          setStatus(`Trade stopped. Profit: $${tradeState.profit.toFixed(2)}`);
+          saveTradeHistory({...tradeState, ended: Date.now()});
+        }
+        clearTradeState();
+        showHistory();
+      }
+    }
+    function showHistory(){
+      const history = getTradeHistory();
+      let html = "<h3>Trade History</h3>";
+      if(history.length === 0) html += "<div>No trades yet.</div>";
+      else html += "<table style='width:100%;margin-top:12px;font-size:0.98em;'><tr><th>Asset</th><th>Amount($)</th><th>Profit($)</th><th>Ended</th></tr>"+
+      history.slice(0,10).map(t=>{
+        let d = new Date(t.ended||t.started);
+        return `<tr>
+          <td>${t.asset}</td>
+          <td>${t.amount}</td>
+          <td>${t.profit.toFixed(2)}</td>
+          <td>${d.toLocaleString()}</td>
+        </tr>`;
+      }).join("")+"</table>";
+      document.getElementById("trade-history").innerHTML = html;
+    }
+    document.getElementById("start-trade-btn").onclick = function(){
+      let amt = parseFloat(document.getElementById("trade-amount").value);
+      let asset = document.getElementById("trade-asset").value;
+      if(isNaN(amt) || amt<1 || amt>1000){
+        alert("Amount must be between $1 and $1000."); return;
+      }
+      startTrade(amt, asset);
+    };
+    document.getElementById("stop-trade-btn").onclick = function(){ stopTrade(); };
+    // Restore on load
+    window.addEventListener("DOMContentLoaded", ()=>{
+      tradeState = getTradeState();
+      if(tradeState && tradeState.running){
+        updateTradePanel(); startTradeTimer();
+        tradeInterval = setInterval(() => {
+          if(!tradeState.running) return;
+          let elapsed = Date.now()-tradeState.started;
+          tradeState.progress = Math.min(100, (elapsed/(24*60*60*10)) );
+          if(tradeState.progress >= 100) tradeState.progress = 100;
+          let direction = Math.random() > 0.15 ? 1 : -1;
+          let tick = tradeState.amount * (Math.random()*0.002*direction);
+          tradeState.profit += tick; if(tradeState.profit<0) tradeState.profit=0;
+          saveTradeState(tradeState); updateTradePanel();
+          if(tradeState.progress>=100 || (Date.now()-tradeState.started) > 24*60*60*1000){
+            tradeState.running = false; saveTradeState(tradeState);
+            setStatus("Trade finished! Press 'Stop Trade' to end.");
+            clearInterval(tradeInterval); stopTradeTimer();
+          }
+        }, 1800);
+      } else {
+        document.getElementById('live-trade').style.display = "none";
+        document.getElementById('trade-control').style.display = "block";
+      }
+      showHistory();
+    });
+  </script>
+</body>
+  </html>
