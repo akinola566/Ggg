@@ -4,28 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>🚀 AI Crypto Trading Bot - Bitcoin & USDT</title>
-
-  <!-- Fonts and Icons -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;900&display=swap" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-  <!-- Demo style, change to your own if needed! -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/akinola566/Stylesmcbot/docs/style.css">
   <style>
-    .modal-overlay {
-      position: fixed; top:0; left:0; width:100vw; height:100vh;
-      background:rgba(0,0,0,0.55); display:none; align-items:center; justify-content:center; z-index:1000;
-    }
-    .modal-content { box-shadow:0 2px 16px #0006; }
-    @media (max-width: 500px) {
-      .modal-content { padding:16px 5vw !important; }
-    }
-    .glassmorphic-card {
-      background: rgba(44, 62, 80, 0.7);
-      box-shadow: 0 4px 32px #0003;
-      border-radius: 18px;
-      border: 1px solid #5e5e5e55;
-      backdrop-filter: blur(8px);
-    }
+    body { padding-bottom: 70px; }
+    .main-container { margin-bottom: 48px; }
   </style>
 </head>
 <body>
@@ -36,7 +20,6 @@
       <div class="loading-text">Initializing AI Trading Bot...</div>
     </div>
   </div>
-
   <div class="main-container">
     <!-- Hero Header -->
     <header class="hero-header">
@@ -175,48 +158,41 @@
         </div>
       </div>
     </div>
-    <!-- NEW: Trade for Me Button -->
+    <!-- Trade for Me Button (still here for quick access)-->
     <div style="text-align:center; margin: 32px 0;">
       <button id="trade-for-me-btn" class="neon-btn start-btn" style="font-size:1.2em; padding: 16px 40px;">💸 Trade for Me</button>
     </div>
-    <!-- Trade Modal -->
-    <div id="trade-modal" class="modal-overlay">
-      <div class="modal-content" style="background:#23272f; color:#fff; padding:32px 24px; border-radius:16px; max-width:350px; width:90vw; text-align:center; margin:auto;">
-        <h2 style="margin-bottom:18px;">Start a New Trade</h2>
-        <label style="font-size:1em;">Amount ($):</label><br>
-        <input type="number" id="trade-amount" min="1" max="1000" value="100" style="margin:8px 0 16px 0; padding:8px;width:80%;border-radius:6px;border:1px solid #888;"><br>
-        <label style="font-size:1em;">Asset:</label><br>
-        <select id="trade-asset" style="margin:8px 0 24px 0; padding:8px; width:80%;border-radius:6px;border:1px solid #888;">
-          <option value="BTC">BTC</option>
-          <option value="USDT">USDT</option>
-        </select><br>
-        <button id="start-trade-btn" class="neon-btn start-btn" style="width:80%;margin-bottom:10px;">Start Trade</button><br>
-        <button id="cancel-trade-btn" class="neon-btn stop-btn" style="width:50%;">Cancel</button>
-      </div>
-    </div>
-    <!-- Live Trade Panel -->
-    <div id="live-trade-panel" class="glassmorphic-card" style="display:none; max-width:400px; margin:32px auto; padding:28px 18px;text-align:center;">
-      <h2>Live Trade Status</h2>
-      <div id="trade-status-msg" style="margin:12px 0 18px 0; font-size:1.15em;">Trading...</div>
-      <div style="margin: 18px 0;">
-        <div style="height:24px;width:100%;background:#444;border-radius:12px;overflow:hidden;">
-          <div id="trade-profit-bar" style="height:100%;width:0%;background:linear-gradient(90deg,#00ff88,#42a1fa); transition:width 0.6s;"></div>
-        </div>
-        <div id="profit-text" style="margin-top:8px;font-weight:bold;font-size:1.2em;">Profit: $0.00</div>
-      </div>
-      <button id="stop-trade-btn" class="neon-btn stop-btn" style="margin-top:10px;">Stop Trade</button>
+  </div>
+  <!-- Bottom Navigation Bar -->
+  <nav id="bottom-nav" style="position:fixed;left:0;right:0;bottom:0;height:60px;background:rgba(30,34,40,0.98);box-shadow:0 -2px 16px #0003;display:flex;align-items:center;justify-content:space-evenly;z-index:2000;">
+    <button id="nav-trade" title="Trade For Me" style="background:none;border:none;outline:none;font-size:2em;color:#00ff88;">🤖</button>
+    <button id="nav-menu" title="Menu" style="background:none;border:none;outline:none;font-size:2em;color:#fff;">&#9776;</button>
+  </nav>
+  <div id="nav-modal" style="display:none;position:fixed;left:0;top:0;width:100vw;height:100vh;z-index:2100;
+    background:rgba(0,0,0,0.65);align-items:flex-end;justify-content:center;">
+    <div style="background:#23272f;color:#fff;width:100vw;max-width:350px;margin:auto;border-radius:18px 18px 0 0;padding:32px 0 24px 0;text-align:center;box-shadow:0 -2px 16px #0006;">
+      <h2 style="margin-bottom:18px;">Menu</h2>
+      <a href="index.html" style="display:block;padding:10px 0;color:#00ff88;text-decoration:none;font-size:1.15em;">🏠 Home</a>
+      <a href="trade.html" style="display:block;padding:10px 0;color:#00ff88;text-decoration:none;font-size:1.15em;">🤖 Trade For Me</a>
+      <a href="dashboard.html" style="display:block;padding:10px 0;color:#00ff88;text-decoration:none;font-size:1.15em;">📊 Dashboard</a>
+      <a href="#" id="nav-modal-close" style="display:block;padding:10px 0;margin-top:8px;color:#ff4757;text-decoration:none;font-size:1.15em;">Close</a>
     </div>
   </div>
-  <!-- Socket.io (not used in this demo, but CDN is loaded for future use) -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"></script>
   <script>
+    // Navigation bar logic
+    document.getElementById('trade-for-me-btn').onclick = () => window.location.href = "trade.html";
+    document.getElementById('nav-trade').onclick = () => window.location.href = "trade.html";
+    document.getElementById('nav-menu').onclick = () => document.getElementById('nav-modal').style.display = "flex";
+    document.getElementById('nav-modal-close').onclick = (e) => { e.preventDefault(); document.getElementById('nav-modal').style.display = "none"; };
+    document.getElementById('nav-modal').onclick = function(e) { if(e.target === this) this.style.display = "none"; };
+
+    // Dashboard Bot Logic
     window.addEventListener('load', function () {
       setTimeout(() => {
         document.getElementById('loadingOverlay').style.display = 'none';
       }, 2000);
     });
 
-    // ========== CRYPTO BOT DASHBOARD JS ==========
     class CryptoTradingBot {
       constructor() {
         this.botRunning = false;
@@ -233,13 +209,8 @@
       initializeEventListeners() {
         const startBtn = document.getElementById('start-bot');
         const stopBtn = document.getElementById('stop-bot');
-
-        if (startBtn) {
-          startBtn.addEventListener('click', () => this.startBot());
-        }
-        if (stopBtn) {
-          stopBtn.addEventListener('click', () => this.stopBot());
-        }
+        if (startBtn) startBtn.addEventListener('click', () => this.startBot());
+        if (stopBtn) stopBtn.addEventListener('click', () => this.stopBot());
       }
 
       startBot() {
@@ -289,73 +260,73 @@
       }
 
       fakeStatusUpdater() {
-  setInterval(() => {
-    if (this.botRunning) {
-      this.signalsToday++;
-      // BTC fake data
-      const fakePrice = (50000 + Math.random() * 2000).toFixed(0);
-      const fakeConfidence = Math.floor(Math.random() * 100);
-      const fakeRisk = ['LOW', 'MEDIUM', 'HIGH', 'VERY HIGH'][Math.floor(Math.random() * 4)];
-      const fakeRecommendation = ['STRONG BUY', 'STRONG SELL', 'DO NOT TRADE', ''][Math.floor(Math.random() * 4)];
-      // Altcoins fake data
-      const fakeAltPrice = (1 + Math.random() * 0.1).toFixed(4);
-      const fakeAltConfidence = Math.floor(Math.random() * 100);
-      const fakeAltRisk = ['LOW', 'MEDIUM', 'HIGH', 'VERY HIGH'][Math.floor(Math.random() * 4)];
-      const fakeAltRecommendation = ['STRONG BUY', 'STRONG SELL', 'DO NOT TRADE', ''][Math.floor(Math.random() * 4)];
+        setInterval(() => {
+          if (this.botRunning) {
+            this.signalsToday++;
+            // BTC data
+            const fakePrice = (50000 + Math.random() * 2000).toFixed(0);
+            const fakeConfidence = Math.floor(Math.random() * 100);
+            const fakeRisk = ['LOW', 'MEDIUM', 'HIGH', 'VERY HIGH'][Math.floor(Math.random() * 4)];
+            const fakeRecommendation = ['STRONG BUY', 'STRONG SELL', 'DO NOT TRADE', ''][Math.floor(Math.random() * 4)];
+            // Altcoins data
+            const fakeAltPrice = (1 + Math.random() * 0.1).toFixed(4);
+            const fakeAltConfidence = Math.floor(Math.random() * 100);
+            const fakeAltRisk = ['LOW', 'MEDIUM', 'HIGH', 'VERY HIGH'][Math.floor(Math.random() * 4)];
+            const fakeAltRecommendation = ['STRONG BUY', 'STRONG SELL', 'DO NOT TRADE', ''][Math.floor(Math.random() * 4)];
 
-      const fakeData = {
-        instruments: {
-          'FAKE_BTC': {
-            price: fakePrice,
-            active_trade: {
-              confidence: `${fakeConfidence}%`,
-              risk_level: fakeRisk,
-              recommendation: fakeRecommendation
-            }
-          },
-          'FAKE_ALT': {
-            price: fakeAltPrice,
-            active_trade: {
-              confidence: `${fakeAltConfidence}%`,
-              risk_level: fakeAltRisk,
-              recommendation: fakeAltRecommendation
-            }
+            const fakeData = {
+              instruments: {
+                'FAKE_BTC': {
+                  price: fakePrice,
+                  active_trade: {
+                    confidence: `${fakeConfidence}%`,
+                    risk_level: fakeRisk,
+                    recommendation: fakeRecommendation
+                  }
+                },
+                'FAKE_ALT': {
+                  price: fakeAltPrice,
+                  active_trade: {
+                    confidence: `${fakeAltConfidence}%`,
+                    risk_level: fakeAltRisk,
+                    recommendation: fakeAltRecommendation
+                  }
+                }
+              }
+            };
+            this.updateDashboard(fakeData);
+            this.addLogEntry(`📊 New Signal - ${fakeRecommendation} / ${fakeAltRecommendation}`);
+          }
+        }, 3000);
+      }
+
+      updateDashboard(data) {
+        if (data.instruments) {
+          this.instruments = data.instruments;
+          // BTC card
+          this.updateCryptoCard('btc', {
+            price: data.instruments['FAKE_BTC'].price,
+            risk: this.mapRiskLevel(data.instruments['FAKE_BTC'].active_trade.risk_level),
+            confidence: data.instruments['FAKE_BTC'].active_trade.confidence,
+            recommendation: this.mapRecommendation(data.instruments['FAKE_BTC'].active_trade.recommendation)
+          });
+          // Altcoins card
+          this.updateCryptoCard('alt', {
+            price: data.instruments['FAKE_ALT'].price,
+            risk: this.mapRiskLevel(data.instruments['FAKE_ALT'].active_trade.risk_level),
+            confidence: data.instruments['FAKE_ALT'].active_trade.confidence,
+            recommendation: this.mapRecommendation(data.instruments['FAKE_ALT'].active_trade.recommendation)
+          });
+
+          // Stats
+          const signalsElement = document.getElementById('signals-today');
+          if (signalsElement) signalsElement.textContent = this.signalsToday;
+          const successElement = document.getElementById('success-rate');
+          if (successElement) {
+            const rate = Math.min(95, 75 + (this.signalsToday % 5) * 5);
+            successElement.textContent = `${rate}%`;
           }
         }
-      };
-      this.updateDashboard(fakeData);
-      this.addLogEntry(`📊 New Signal - ${fakeRecommendation} / ${fakeAltRecommendation}`);
-    }
-  }, 3000);
-}
-
-updateDashboard(data) {
-  if (data.instruments) {
-    this.instruments = data.instruments;
-    // BTC card
-    this.updateCryptoCard('btc', {
-      price: data.instruments['FAKE_BTC'].price,
-      risk: this.mapRiskLevel(data.instruments['FAKE_BTC'].active_trade.risk_level),
-      confidence: data.instruments['FAKE_BTC'].active_trade.confidence,
-      recommendation: this.mapRecommendation(data.instruments['FAKE_BTC'].active_trade.recommendation)
-    });
-    // Altcoins card
-    this.updateCryptoCard('alt', {
-      price: data.instruments['FAKE_ALT'].price,
-      risk: this.mapRiskLevel(data.instruments['FAKE_ALT'].active_trade.risk_level),
-      confidence: data.instruments['FAKE_ALT'].active_trade.confidence,
-      recommendation: this.mapRecommendation(data.instruments['FAKE_ALT'].active_trade.recommendation)
-    });
-
-    // Stats
-    const signalsElement = document.getElementById('signals-today');
-    if (signalsElement) signalsElement.textContent = this.signalsToday;
-    const successElement = document.getElementById('success-rate');
-    if (successElement) {
-      const rate = Math.min(95, 75 + (this.signalsToday % 5) * 5);
-      successElement.textContent = `${rate}%`;
-    }
-  }
       }
 
       updateCryptoCard(prefix, data) {
@@ -433,130 +404,6 @@ updateDashboard(data) {
       }
     }
     window.onload = () => new CryptoTradingBot();
-
-    // ========== TRADE FOR ME DEMO ==========
-    const tradeKey = "active_fake_trade";
-    function saveTradeState(state) { localStorage.setItem(tradeKey, JSON.stringify(state)); }
-    function getTradeState() { return JSON.parse(localStorage.getItem(tradeKey) || "null"); }
-    function clearTradeState() { localStorage.removeItem(tradeKey); }
-
-    const tradeBtn = document.getElementById("trade-for-me-btn");
-    const tradeModal = document.getElementById("trade-modal");
-    const startTradeBtn = document.getElementById("start-trade-btn");
-    const cancelTradeBtn = document.getElementById("cancel-trade-btn");
-    const livePanel = document.getElementById("live-trade-panel");
-    const stopTradeBtn = document.getElementById("stop-trade-btn");
-    const profitBar = document.getElementById("trade-profit-bar");
-    const profitText = document.getElementById("profit-text");
-    const tradeStatusMsg = document.getElementById("trade-status-msg");
-
-    let tradeInterval = null;
-    let tradeState = null;
-
-    tradeBtn.onclick = () => {
-      tradeModal.style.display = "flex";
-      document.getElementById("trade-amount").value = 100;
-      document.getElementById("trade-asset").value = "BTC";
-    };
-    cancelTradeBtn.onclick = () => tradeModal.style.display = "none";
-    startTradeBtn.onclick = () => {
-      const amount = parseFloat(document.getElementById("trade-amount").value);
-      const asset = document.getElementById("trade-asset").value;
-      if (isNaN(amount) || amount < 1 || amount > 1000) {
-        alert("Please enter an amount between $1 and $1000.");
-        return;
-      }
-      startFakeTrade(amount, asset);
-      tradeModal.style.display = "none";
-    };
-    stopTradeBtn.onclick = () => stopFakeTrade();
-
-    function startFakeTrade(amount, asset) {
-      stopFakeTrade();
-      tradeState = {
-        started: Date.now(),
-        amount,
-        asset,
-        profit: 0,
-        progress: 0,
-        running: true
-      };
-      saveTradeState(tradeState);
-      updateTradePanel();
-      livePanel.style.display = "block";
-      tradeInterval = setInterval(() => {
-        if (!tradeState.running) return;
-        const tickProfit = amount * (0.0005 + Math.random() * 0.009);
-        tradeState.profit += tickProfit;
-        tradeState.progress += Math.random() * 8 + 2;
-        if (tradeState.progress > 100) tradeState.progress = 100;
-        saveTradeState(tradeState);
-        updateTradePanel();
-        if (tradeState.progress < 100) {
-          tradeStatusMsg.textContent = `Trading now for ${asset}...`;
-        } else {
-          tradeStatusMsg.textContent = `Trade finished!`;
-          clearInterval(tradeInterval);
-          tradeState.running = false;
-          saveTradeState(tradeState);
-          setTimeout(() => {
-            alert(`Trade complete!\nProfit gained: $${tradeState.profit.toFixed(2)}`);
-            livePanel.style.display = "none";
-            clearTradeState();
-          }, 1200);
-        }
-      }, 1300);
-    }
-
-    function stopFakeTrade() {
-      if (tradeInterval) clearInterval(tradeInterval);
-      if (tradeState && tradeState.running) {
-        tradeState.running = false;
-        saveTradeState(tradeState);
-        alert(`Trade stopped.\nTotal profit: $${tradeState.profit ? tradeState.profit.toFixed(2) : "0.00"}`);
-      }
-      livePanel.style.display = "none";
-      clearTradeState();
-    }
-
-    function updateTradePanel() {
-      if (!tradeState) return;
-      profitBar.style.width = `${tradeState.progress}%`;
-      profitText.textContent = `Profit: $${tradeState.profit.toFixed(2)}`;
-      tradeStatusMsg.textContent =
-        tradeState.progress < 100
-          ? `Trading now for ${tradeState.asset}...`
-          : "Trade finished!";
-    }
-
-    window.addEventListener("DOMContentLoaded", () => {
-      tradeState = getTradeState();
-      if (tradeState && tradeState.running) {
-        livePanel.style.display = "block";
-        updateTradePanel();
-        tradeInterval = setInterval(() => {
-          if (!tradeState.running) return;
-          const amount = tradeState.amount;
-          const tickProfit = amount * (0.0005 + Math.random() * 0.009);
-          tradeState.profit += tickProfit;
-          tradeState.progress += Math.random() * 8 + 2;
-          if (tradeState.progress > 100) tradeState.progress = 100;
-          saveTradeState(tradeState);
-          updateTradePanel();
-          if (tradeState.progress >= 100) {
-            tradeStatusMsg.textContent = "Trade finished!";
-            clearInterval(tradeInterval);
-            tradeState.running = false;
-            saveTradeState(tradeState);
-            setTimeout(() => {
-              alert(`Trade complete!\nProfit gained: $${tradeState.profit.toFixed(2)}`);
-              livePanel.style.display = "none";
-              clearTradeState();
-            }, 1200);
-          }
-        }, 1300);
-      }
-    });
   </script>
 </body>
-</html>
+  </html>
