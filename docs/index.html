@@ -289,48 +289,73 @@
       }
 
       fakeStatusUpdater() {
-        setInterval(() => {
-          if (this.botRunning) {
-            this.signalsToday++;
-            const fakePrice = (50000 + Math.random() * 2000).toFixed(0);
-            const fakeConfidence = Math.floor(Math.random() * 100);
-            const fakeRisk = ['LOW', 'MEDIUM', 'HIGH', 'VERY HIGH'][Math.floor(Math.random() * 4)];
-            const fakeRecommendation = ['STRONG BUY', 'STRONG SELL', 'DO NOT TRADE', ''][Math.floor(Math.random() * 4)];
-            const fakeData = {
-              instruments: {
-                'FAKE_BTC': {
-                  price: fakePrice,
-                  active_trade: {
-                    confidence: `${fakeConfidence}%`,
-                    risk_level: fakeRisk,
-                    recommendation: fakeRecommendation
-                  }
-                }
-              }
-            };
-            this.updateDashboard(fakeData);
-            this.addLogEntry(`📊 New Signal - ${fakeRecommendation}`);
-          }
-        }, 3000);
-      }
+  setInterval(() => {
+    if (this.botRunning) {
+      this.signalsToday++;
+      // BTC fake data
+      const fakePrice = (50000 + Math.random() * 2000).toFixed(0);
+      const fakeConfidence = Math.floor(Math.random() * 100);
+      const fakeRisk = ['LOW', 'MEDIUM', 'HIGH', 'VERY HIGH'][Math.floor(Math.random() * 4)];
+      const fakeRecommendation = ['STRONG BUY', 'STRONG SELL', 'DO NOT TRADE', ''][Math.floor(Math.random() * 4)];
+      // Altcoins fake data
+      const fakeAltPrice = (1 + Math.random() * 0.1).toFixed(4);
+      const fakeAltConfidence = Math.floor(Math.random() * 100);
+      const fakeAltRisk = ['LOW', 'MEDIUM', 'HIGH', 'VERY HIGH'][Math.floor(Math.random() * 4)];
+      const fakeAltRecommendation = ['STRONG BUY', 'STRONG SELL', 'DO NOT TRADE', ''][Math.floor(Math.random() * 4)];
 
-      updateDashboard(data) {
-        if (data.instruments) {
-          this.instruments = data.instruments;
-          this.updateCryptoCard('btc', {
-            price: data.instruments['FAKE_BTC'].price,
-            risk: this.mapRiskLevel(data.instruments['FAKE_BTC'].active_trade.risk_level),
-            confidence: data.instruments['FAKE_BTC'].active_trade.confidence,
-            recommendation: this.mapRecommendation(data.instruments['FAKE_BTC'].active_trade.recommendation)
-          });
-          const signalsElement = document.getElementById('signals-today');
-          if (signalsElement) signalsElement.textContent = this.signalsToday;
-          const successElement = document.getElementById('success-rate');
-          if (successElement) {
-            const rate = Math.min(95, 75 + (this.signalsToday % 5) * 5);
-            successElement.textContent = `${rate}%`;
+      const fakeData = {
+        instruments: {
+          'FAKE_BTC': {
+            price: fakePrice,
+            active_trade: {
+              confidence: `${fakeConfidence}%`,
+              risk_level: fakeRisk,
+              recommendation: fakeRecommendation
+            }
+          },
+          'FAKE_ALT': {
+            price: fakeAltPrice,
+            active_trade: {
+              confidence: `${fakeAltConfidence}%`,
+              risk_level: fakeAltRisk,
+              recommendation: fakeAltRecommendation
+            }
           }
         }
+      };
+      this.updateDashboard(fakeData);
+      this.addLogEntry(`📊 New Signal - ${fakeRecommendation} / ${fakeAltRecommendation}`);
+    }
+  }, 3000);
+}
+
+updateDashboard(data) {
+  if (data.instruments) {
+    this.instruments = data.instruments;
+    // BTC card
+    this.updateCryptoCard('btc', {
+      price: data.instruments['FAKE_BTC'].price,
+      risk: this.mapRiskLevel(data.instruments['FAKE_BTC'].active_trade.risk_level),
+      confidence: data.instruments['FAKE_BTC'].active_trade.confidence,
+      recommendation: this.mapRecommendation(data.instruments['FAKE_BTC'].active_trade.recommendation)
+    });
+    // Altcoins card
+    this.updateCryptoCard('alt', {
+      price: data.instruments['FAKE_ALT'].price,
+      risk: this.mapRiskLevel(data.instruments['FAKE_ALT'].active_trade.risk_level),
+      confidence: data.instruments['FAKE_ALT'].active_trade.confidence,
+      recommendation: this.mapRecommendation(data.instruments['FAKE_ALT'].active_trade.recommendation)
+    });
+
+    // Stats
+    const signalsElement = document.getElementById('signals-today');
+    if (signalsElement) signalsElement.textContent = this.signalsToday;
+    const successElement = document.getElementById('success-rate');
+    if (successElement) {
+      const rate = Math.min(95, 75 + (this.signalsToday % 5) * 5);
+      successElement.textContent = `${rate}%`;
+    }
+  }
       }
 
       updateCryptoCard(prefix, data) {
