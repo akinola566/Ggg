@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>📊 Dashboard - AI Crypto Bot</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/akinola566/Stylesmcbot/docs/style.css">
+  <style>
+    body { padding-bottom: 70px; }
+    .profile-card { max-width:400px;margin:36px auto 18px auto;background:rgba(44,62,80,0.7);border-radius:16px;padding:24px 18px;text-align:center;box-shadow:0 4px 32px #0003; }
+    .profile-card input { width:70%;margin:10px 0;padding:6px;border-radius:6px;border:1px solid #888;}
+    .stats-table { margin:30px auto 0 auto;width:90%;max-width:440px;border-collapse:collapse;}
+    .stats-table th,.stats-table td{padding:8px 6px;border-bottom:1px solid #444;}
+  </style>
+</head>
+<body>
+  <div class="profile-card">
+    <h2>User Profile</h2>
+    <div>
+      <label>Name:</label>
+      <input type="text" id="profile-name" placeholder="Enter your name">
+      <button id="save-profile" class="neon-btn start-btn" style="margin-left:12px;margin-top:8px;">Save</button>
+    </div>
+    <div id="profile-msg" style="margin-top:10px;color:#00ff88;"></div>
+  </div>
+  <div class="profile-card">
+    <h2>Trading Stats</h2>
+    <table class="stats-table">
+      <tr><th>Total Trades</th><td id="stat-total"></td></tr>
+      <tr><th>Total Profit</th><td id="stat-profit"></td></tr>
+      <tr><th>Biggest Win</th><td id="stat-win"></td></tr>
+      <tr><th>Biggest Loss</th><td id="stat-loss"></td></tr>
+    </table>
+  </div>
+  <div class="profile-card">
+    <h2>Trade History</h2>
+    <div id="dashboard-history"></div>
+  </div>
+  <!-- Bottom Navigation Bar -->
+  <nav id="bottom-nav" style="position:fixed;left:0;right:0;bottom:0;height:60px;background:rgba(30,34,40,0.98);box-shadow:0 -2px 16px #0003;display:flex;align-items:center;justify-content:space-evenly;z-index:2000;">
+    <button id="nav-trade" title="Trade For Me" style="background:none;border:none;outline:none;font-size:2em;color:#00ff88;">🤖</button>
+    <button id="nav-menu" title="Menu" style="background:none;border:none;outline:none;font-size:2em;color:#fff;">&#9776;</button>
+  </nav>
+  <div id="nav-modal" style="display:none;position:fixed;left:0;top:0;width:100vw;height:100vh;z-index:2100;
+    background:rgba(0,0,0,0.65);align-items:flex-end;justify-content:center;">
+    <div style="background:#23272f;color:#fff;width:100vw;max-width:350px;margin:auto;border-radius:18px 18px 0 0;padding:32px 0 24px 0;text-align:center;box-shadow:0 -2px 16px #0006;">
+      <h2 style="margin-bottom:18px;">Menu</h2>
+      <a href="index.html" style="display:block;padding:10px 0;color:#00ff88;text-decoration:none;font-size:1.15em;">🏠 Home</a>
+      <a href="trade.html" style="display:block;padding:10px 0;color:#00ff88;text-decoration:none;font-size:1.15em;">🤖 Trade For Me</a>
+      <a href="dashboard.html" style="display:block;padding:10px 0;color:#00ff88;text-decoration:none;font-size:1.15em;">📊 Dashboard</a>
+      <a href="#" id="nav-modal-close" style="display:block;padding:10px 0;margin-top:8px;color:#ff4757;text-decoration:none;font-size:1.15em;">Close</a>
+    </div>
+  </div>
+  <script>
+    // Navigation bar logic
+    document.getElementById('nav-trade').onclick = () => window.location.href = "trade.html";
+    document.getElementById('nav-menu').onclick = () => document.getElementById('nav-modal').style.display = "flex";
+    document.getElementById('nav-modal-close').onclick = (e) => { e.preventDefault(); document.getElementById('nav-modal').style.display = "none"; };
+    document.getElementById('nav-modal').onclick = function(e) { if(e.target === this) this.style.display = "none"; };
+
+    // Profile logic
+    const PROFILE_KEY = "profile_name";
+    function saveProfile(name){
+      localStorage.setItem(PROFILE_KEY, name);
+      document.getElementById("profile-msg").textContent = "Profile saved!";
+    }
+    function getProfile(){
+      return localStorage.getItem(PROFILE_KEY)||"";
+    }
+    document.getElementById("save-profile").onclick = function(){
+      let v = document.getElementById("profile-name").value.trim();
+      saveProfile(v);
+    };
+    document.getElementById("profile-name").value = getProfile();
+
+    // Stats
+    const TRADE_HISTORY_KEY = "trade_history";
+    function getTradeHistory(){ return JSON.parse(localStorage.getItem(TRADE_HISTORY_KEY)||"[]"); }
+    function updateStats(){
+      const trades = getTradeHistory();
+      let total = trades.length;
+      let profit = trades.reduce((s,t)=>s+(t.profit||0),0);
+      let win = trades.length ? Math.max(...trades.map(t=>t.profit)) : 0;
+      let loss = trades.length ? Math.min(...trades.map(t=>t.profit)) : 0;
+      document.getElementById("stat-total").textContent = total;
+      document.getElementById("stat-profit").textContent = "$"+profit.toFixed(2);
+      document.getElementById("stat-win").textContent = "$"+win.toFixed(2);
+      document.getElementById("stat-loss").textContent = "$"+loss.toFixed(2);
+      // History
+      let html = "<table style='width:100%;font-size:0.98em;'><tr><th>Asset</th><th>Amount($)</th><th>Profit($)</th><th>Ended</th></tr>";
+      html += trades.slice(0,20).map(t=>{
+        let d=new Date(t.ended||t.started);
+        return `<tr><td>${t.asset}</td><td>${t.amount}</td><td>${t.profit.toFixed(2)}</td><td>${d.toLocaleString()}</td></tr>`;
+      }).join("")+"</table>";
+      document.getElementById("dashboard-history").innerHTML = html;
+    }
+    window.addEventListener("DOMContentLoaded", updateStats);
+  </script>
+</body>
+            </html>
