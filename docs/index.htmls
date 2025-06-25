@@ -464,3 +464,74 @@
         const tickProfit = amount * (0.0005 + Math.random() * 0.009);
         tradeState.profit += tickProfit;
         tradeState.progress += Math.random() * 8 + 2;
+        if (tradeState.progress > 100) tradeState.progress = 100;
+        saveTradeState(tradeState);
+        updateTradePanel();
+        if (tradeState.progress < 100) {
+          tradeStatusMsg.textContent = `Trading now for ${asset}...`;
+        } else {
+          tradeStatusMsg.textContent = `Trade finished!`;
+          clearInterval(tradeInterval);
+          tradeState.running = false;
+          saveTradeState(tradeState);
+          setTimeout(() => {
+            alert(`Trade complete!\nProfit gained: $${tradeState.profit.toFixed(2)}`);
+            livePanel.style.display = "none";
+            clearTradeState();
+          }, 1200);
+        }
+      }, 1300);
+    }
+
+    function stopFakeTrade() {
+      if (tradeInterval) clearInterval(tradeInterval);
+      if (tradeState && tradeState.running) {
+        tradeState.running = false;
+        saveTradeState(tradeState);
+        alert(`Trade stopped.\nTotal profit: $${tradeState.profit ? tradeState.profit.toFixed(2) : "0.00"}`);
+      }
+      livePanel.style.display = "none";
+      clearTradeState();
+    }
+
+    function updateTradePanel() {
+      if (!tradeState) return;
+      profitBar.style.width = `${tradeState.progress}%`;
+      profitText.textContent = `Profit: $${tradeState.profit.toFixed(2)}`;
+      tradeStatusMsg.textContent =
+        tradeState.progress < 100
+          ? `Trading now for ${tradeState.asset}...`
+          : "Trade finished!";
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      tradeState = getTradeState();
+      if (tradeState && tradeState.running) {
+        livePanel.style.display = "block";
+        updateTradePanel();
+        tradeInterval = setInterval(() => {
+          if (!tradeState.running) return;
+          const amount = tradeState.amount;
+          const tickProfit = amount * (0.0005 + Math.random() * 0.009);
+          tradeState.profit += tickProfit;
+          tradeState.progress += Math.random() * 8 + 2;
+          if (tradeState.progress > 100) tradeState.progress = 100;
+          saveTradeState(tradeState);
+          updateTradePanel();
+          if (tradeState.progress >= 100) {
+            tradeStatusMsg.textContent = "Trade finished!";
+            clearInterval(tradeInterval);
+            tradeState.running = false;
+            saveTradeState(tradeState);
+            setTimeout(() => {
+              alert(`Trade complete!\nProfit gained: $${tradeState.profit.toFixed(2)}`);
+              livePanel.style.display = "none";
+              clearTradeState();
+            }, 1200);
+          }
+        }, 1300);
+      }
+    });
+  </script>
+</body>
+</html>
