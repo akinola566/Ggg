@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🚀 AI Crypto Trading Bot - Bitcoin & USDT</title>
+
+  <!-- Fonts and Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+  <!-- Your external CDN CSS (working) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/akinola566/Stylesmcbot/docs/style.css">
+</head>
+<body>
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="crypto-loader">
+      <div class="bitcoin-icon">₿</div>
+      <div class="loading-text">Initializing AI Trading Bot...</div>
+    </div>
+  </div>
+
+  <div class="main-container">
+    <!-- Hero Header -->
+    <header class="hero-header">
+      <div class="crypto-title">
+        <i class="fab fa-bitcoin crypto-icon"></i>
+        <h1 class="brand-name">AI CRYPTO BOT</h1>
+        <div class="subtitle">Bitcoin & USDT Smart Trading Assistant</div>
+      </div>
+
+      <div class="status-bar">
+        <div class="status-item">
+          <span class="status-label">Connection:</span>
+          <span id="connection-status" class="status-value connected">🟢 Connected</span>
+        </div>
+        <div class="status-item">
+          <span class="status-label">Runtime:</span>
+          <span id="uptime" class="status-value">00:00:00</span>
+        </div>
+      </div>
+
+      <div class="control-buttons">
+        <button id="start-bot" class="neon-btn start-btn">
+          <i class="fas fa-rocket"></i>
+          <span>START TRADING</span>
+        </button>
+        <button id="stop-bot" class="neon-btn stop-btn" disabled>
+          <i class="fas fa-stop"></i>
+          <span>STOP BOT</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Trading Dashboard -->
+    <div class="dashboard-grid">
+      <div class="trading-panel">
+        <div class="panel-header">
+          <h2>🎯 SMART TRADING SIGNALS</h2>
+          <div class="signal-indicator" id="signalIndicator">
+            <div class="pulse-dot"></div>
+            <span>Analyzing Market...</span>
+          </div>
+        </div>
+
+        <div class="crypto-cards" id="cryptoCards">
+          <div class="crypto-card bitcoin-card">
+            <div class="crypto-header">
+              <div class="crypto-info">
+                <i class="fab fa-bitcoin"></i>
+                <span class="crypto-name">BITCOIN</span>
+                <span class="crypto-symbol">BTC/USDT</span>
+              </div>
+              <div class="price-display" id="btc-price">$0.00</div>
+            </div>
+            <div class="signal-section">
+              <div class="risk-meter">
+                <div class="risk-label">RISK LEVEL</div>
+                <div class="risk-value" id="btc-risk">ANALYZING</div>
+              </div>
+              <div class="confidence-meter">
+                <div class="confidence-label">AI CONFIDENCE</div>
+                <div class="confidence-value" id="btc-confidence">---%</div>
+                <div class="confidence-bar">
+                  <div class="confidence-fill" id="btc-confidence-bar"></div>
+                </div>
+              </div>
+            </div>
+            <div class="recommendation-box" id="btc-recommendation">
+              <div class="recommendation-text">Collecting market data...</div>
+              <div class="recommendation-action"></div>
+            </div>
+          </div>
+
+          <div class="crypto-card usdt-card">
+            <div class="crypto-header">
+              <div class="crypto-info">
+                <i class="fas fa-coins"></i>
+                <span class="crypto-name">ALTCOINS</span>
+                <span class="crypto-symbol">Various/USDT</span>
+              </div>
+              <div class="price-display" id="alt-price">Multiple Pairs</div>
+            </div>
+            <div class="signal-section">
+              <div class="risk-meter">
+                <div class="risk-label">RISK LEVEL</div>
+                <div class="risk-value" id="alt-risk">ANALYZING</div>
+              </div>
+              <div class="confidence-meter">
+                <div class="confidence-label">AI CONFIDENCE</div>
+                <div class="confidence-value" id="alt-confidence">---%</div>
+                <div class="confidence-bar">
+                  <div class="confidence-fill" id="alt-confidence-bar"></div>
+                </div>
+              </div>
+            </div>
+            <div class="recommendation-box" id="alt-recommendation">
+              <div class="recommendation-text">Scanning opportunities...</div>
+              <div class="recommendation-action"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="side-panel">
+        <div class="stats-box">
+          <h3>📊 QUICK STATS</h3>
+          <div class="stat-item">
+            <span class="stat-label">Market Status:</span>
+            <span class="stat-value" id="market-status">🟢 ACTIVE</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Signals Today:</span>
+            <span class="stat-value" id="signals-today">0</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Success Rate:</span>
+            <span class="stat-value" id="success-rate">---%</span>
+          </div>
+        </div>
+
+        <div class="activity-log">
+          <h3>📝 LIVE ACTIVITY</h3>
+          <div class="log-container" id="activity-log">
+            <div class="log-entry">Bot initialized - Ready to trade</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="trades-section" id="trades-section" style="display: none;">
+      <h2>💰 ACTIVE TRADES</h2>
+      <div class="trades-grid" id="trades-grid">
+        <!-- Trade entries will appear here -->
+      </div>
+    </div>
+
+    <div class="guide-section">
+      <div class="guide-box">
+        <h3>🎓 HOW TO USE THIS BOT</h3>
+        <div class="guide-steps">
+          <div class="step"><div class="step-number">1</div><div class="step-text">Click "START TRADING" to begin market analysis</div></div>
+          <div class="step"><div class="step-number">2</div><div class="step-text">Watch the RISK LEVEL: GREEN = Safe, RED = Dangerous</div></div>
+          <div class="step"><div class="step-number">3</div><div class="step-text">AI CONFIDENCE shows how sure we are (higher = better)</div></div>
+          <div class="step"><div class="step-number">4</div><div class="step-text">Follow the recommendation: BUY, SELL, or WAIT</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Socket.io (not used in this demo, but CDN is loaded for future use) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"></script>
+
+  <!-- Hide Loading Overlay -->
+  <script>
+    window.addEventListener('load', function () {
+      setTimeout(() => {
+        document.getElementById('loadingOverlay').style.display = 'none';
+      }, 2000);
+    });
+  </script>
+
+  <!-- Main Crypto Trading Bot JavaScript -->
+  <script>
+    // Modern Crypto Trading Bot JavaScript (DEMO VERSION - No Real API)
+    class CryptoTradingBot {
+      constructor() {
+        this.botRunning = false;
+        this.instruments = {};
+        this.signalsToday = 0;
+        this.successRate = 0;
+        this.startTime = null;
+
+        this.initializeEventListeners();
+        this.startUptimeCounter();
+        this.fakeStatusUpdater();
+      }
+
+      initializeEventListeners() {
+        const startBtn = document.getElementById('start-bot');
+        const stopBtn = document.getElementById('stop-bot');
+
+        if (startBtn) {
+          startBtn.addEventListener('click', () => this.startBot());
+        }
+
+        if (stopBtn) {
+          stopBtn.addEventListener('click', () => this.stopBot());
+        }
+      }
+
+      startBot() {
+        this.botRunning = true;
+        this.startTime = Date.now();
+        this.updateBotControls();
+        this.updateSignalIndicator('🚀 Bot Active - Scanning Markets...', 'active');
+        this.addLogEntry('🚀 Trading bot started - Simulating crypto markets');
+      }
+
+      stopBot() {
+        this.botRunning = false;
+        this.startTime = null;
+        this.updateBotControls();
+        this.updateSignalIndicator('⏸️ Bot Stopped', 'stopped');
+        this.addLogEntry('⏸️ Trading bot stopped');
+      }
+
+      updateBotControls() {
+        const startBtn = document.getElementById('start-bot');
+        const stopBtn = document.getElementById('stop-bot');
+
+        if (startBtn && stopBtn) {
+          startBtn.disabled = this.botRunning;
+          stopBtn.disabled = !this.botRunning;
+          startBtn.style.opacity = this.botRunning ? '0.5' : '1';
+          stopBtn.style.opacity = this.botRunning ? '1' : '0.5';
+        }
+      }
+
+      updateSignalIndicator(text, status = 'analyzing') {
+        const indicator = document.getElementById('signalIndicator');
+        if (indicator) {
+          const span = indicator.querySelector('span');
+          if (span) span.textContent = text;
+
+          const pulseDot = indicator.querySelector('.pulse-dot');
+          if (pulseDot) pulseDot.style.background = this.getStatusColor(status);
+        }
+      }
+
+      getStatusColor(status) {
+        switch(status) {
+          case 'active': return '#00ff88';
+          case 'stopped': return '#ff4757';
+          case 'analyzing': return '#ffa500';
+          default: return '#42f5d7';
+        }
+      }
+
+      fakeStatusUpdater() {
+        setInterval(() => {
+          if (this.botRunning) {
+            this.signalsToday++;
+            const fakePrice = (50000 + Math.random() * 2000).toFixed(0);
+            const fakeConfidence = Math.floor(Math.random() * 100);
+            const fakeRisk = ['LOW', 'MEDIUM', 'HIGH', 'VERY HIGH'][Math.floor(Math.random() * 4)];
+            const fakeRecommendation = ['STRONG BUY', 'STRONG SELL', 'DO NOT TRADE', ''][Math.floor(Math.random() * 4)];
+
+            const fakeData = {
+              instruments: {
+                'FAKE_BTC': {
+                  price: fakePrice,
+                  active_trade: {
+                    confidence: `${fakeConfidence}%`,
+                    risk_level: fakeRisk,
+                    recommendation: fakeRecommendation
+                  }
+                }
+              }
+            };
+
+            this.updateDashboard(fakeData);
+            this.addLogEntry(`📊 New Signal - ${fakeRecommendation}`);
+          }
+        }, 3000);
+      }
+
+      updateDashboard(data) {
+        if (data.instruments) {
+          this.instruments = data.instruments;
+          this.updateCryptoCard('btc', {
+            price: data.instruments['FAKE_BTC'].price,
+            risk: this.mapRiskLevel(data.instruments['FAKE_BTC'].active_trade.risk_level),
+            confidence: data.instruments['FAKE_BTC'].active_trade.confidence,
+            recommendation: this.mapRecommendation(data.instruments['FAKE_BTC'].active_trade.recommendation)
+          });
+
+          const signalsElement = document.getElementById('signals-today');
+          if (signalsElement) signalsElement.textContent = this.signalsToday;
+
+          const successElement = document.getElementById('success-rate');
+          if (successElement) {
+            const rate = Math.min(95, 75 + (this.signalsToday % 5) * 5);
+            successElement.textContent = `${rate}%`;
+          }
+        }
+      }
+
+      updateCryptoCard(prefix, data) {
+        const priceElement = document.getElementById(`${prefix}-price`);
+        if (priceElement) priceElement.textContent = `$${data.price}`;
+
+        const riskElement = document.getElementById(`${prefix}-risk`);
+        if (riskElement) {
+          riskElement.textContent = data.risk.text;
+          riskElement.className = `risk-value ${data.risk.class}`;
+        }
+
+        const confidenceElement = document.getElementById(`${prefix}-confidence`);
+        const confidenceBar = document.getElementById(`${prefix}-confidence-bar`);
+        if (confidenceElement) confidenceElement.textContent = data.confidence;
+        if (confidenceBar) confidenceBar.style.width = data.confidence;
+
+        const recommendationElement = document.getElementById(`${prefix}-recommendation`);
+        if (recommendationElement) {
+          const textElement = recommendationElement.querySelector('.recommendation-text');
+          const actionElement = recommendationElement.querySelector('.recommendation-action');
+          if (textElement) textElement.textContent = data.recommendation.text;
+          if (actionElement) {
+            actionElement.textContent = data.recommendation.action;
+            actionElement.className = `recommendation-action ${data.recommendation.class}`;
+          }
+        }
+      }
+
+      mapRiskLevel(riskLevel) {
+        switch(riskLevel) {
+          case 'LOW': return { text: 'LOW RISK', class: 'low' };
+          case 'MEDIUM': return { text: 'MEDIUM RISK', class: 'medium' };
+          case 'HIGH': return { text: 'HIGH RISK', class: 'high' };
+          case 'VERY HIGH': return { text: 'VERY HIGH RISK', class: 'very-high' };
+          default: return { text: 'ANALYZING', class: '' };
+        }
+      }
+
+      mapRecommendation(recommendation) {
+        switch(recommendation) {
+          case 'STRONG BUY':
+            return { text: 'AI recommends:', action: 'STRONG BUY 🚀', class: 'buy' };
+          case 'STRONG SELL':
+            return { text: 'AI recommends:', action: 'STRONG SELL 📉', class: 'sell' };
+          case 'DO NOT TRADE':
+            return { text: 'AI recommends:', action: 'DO NOT TRADE ⚠️', class: 'wait' };
+          default:
+            return { text: 'AI is analyzing...', action: 'WAIT FOR SIGNAL', class: 'wait' };
+        }
+      }
+
+      addLogEntry(message) {
+        const logContainer = document.getElementById('activity-log');
+        if (logContainer) {
+          const timestamp = new Date().toLocaleTimeString();
+          const entry = document.createElement('div');
+          entry.className = 'log-entry';
+          entry.textContent = `${timestamp} - ${message}`;
+          logContainer.insertBefore(entry, logContainer.firstChild);
+          while (logContainer.children.length > 20) {
+            logContainer.removeChild(logContainer.lastChild);
+          }
+        }
+      }
+
+      startUptimeCounter() {
+        setInterval(() => {
+          if (this.startTime) {
+            const uptime = Date.now() - this.startTime;
+            const hours = Math.floor(uptime / (1000 * 60 * 60));
+            const minutes = Math.floor((uptime / (1000 * 60)) % 60);
+            const seconds = Math.floor((uptime / 1000) % 60);
+            const uptimeDisplay = document.getElementById('uptime');
+            if (uptimeDisplay) uptimeDisplay.textContent = `${hours}h ${minutes}m ${seconds}s`;
+          }
+        }, 1000);
+      }
+    }
+
+    window.onload = () => new CryptoTradingBot();
+  </script>
+</body>
+  </html>
