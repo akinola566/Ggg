@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>📝 About - OanderTradebot</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    body { background: #181c22; color: #fff; font-family: 'Poppins', sans-serif; padding-bottom: 80px; }
+    .container { max-width: 480px; margin: 44px auto 0 auto; background: rgba(44,62,80,0.95); border-radius: 20px; box-shadow: 0 4px 32px #0004; padding: 32px 24px 30px 24px;}
+    h1 { color: #00ff88; font-size: 2em; margin-bottom: 12px;}
+    .section { margin: 22px 0;}
+    .section-title { color: #42a1fa; font-size: 1.15em; font-weight: 700; margin-bottom: 7px;}
+    ul { margin: 0 0 0 20px; }
+    @media (max-width:600px) { .container{max-width:98vw;} }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📝 About OanderTradebot</h1>
+    <div class="section">
+      <div class="section-title">What is OanderTradebot?</div>
+      <div>
+        OanderTradebot is a smart AI-powered crypto trading dashboard and tool. It gives you live trading signals, simulates profits, and includes a “Trade for Me” feature for hands-off demo trading.
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-title">How to Use</div>
+      <ul>
+        <li>Use the <b>Dashboard</b> to see signals, stats, and active trades.</li>
+        <li>Try <b>Trade For Me</b> for automatic simulated trading and see your profits grow.</li>
+        <li>Set up your <b>Profile</b> and upload a photo for a personal touch.</li>
+        <li>Go to <b>Copy Code</b> to get access to exclusive code (payment required).</li>
+      </ul>
+    </div>
+    <div class="section">
+      <div class="section-title">Need Help?</div>
+      <div>
+        Contact support on WhatsApp: <a href="https://wa.me/2348100096815" style="color:#00ff88;text-decoration:underline;">+2348100096815</a>
+      </div>
+    </div>
+  </div>
+  <!-- Bottom Navigation Bar -->
+  <nav id="bottom-nav" style="position:fixed;left:0;right:0;bottom:0;height:60px;background:rgba(30,34,40,0.98);box-shadow:0 -2px 16px #0003;display:flex;align-items:center;justify-content:space-evenly;z-index:2000;">
+    <button id="nav-trade" title="Trade For Me" style="background:none;border:none;outline:none;font-size:2em;color:#00ff88;">🤖</button>
+    <button id="nav-menu" title="Menu" style="background:none;border:none;outline:none;font-size:2em;color:#fff;">&#9776;</button>
+  </nav>
+  <div id="nav-modal" style="display:none;position:fixed;left:0;top:0;width:100vw;height:100vh;z-index:2100;
+    background:rgba(0,0,0,0.65);align-items:flex-end;justify-content:center;">
+    <div style="background:#23272f;color:#fff;width:100vw;max-width:350px;margin:auto;border-radius:18px 18px 0 0;padding:32px 0 24px 0;text-align:center;box-shadow:0 -2px 16px #0006;">
+      <h2 style="margin-bottom:18px;">Menu</h2>
+      <a href="index.html" style="display:block;padding:10px 0;color:#00ff88;">🏠 Home</a>
+      <a href="trade.html" style="display:block;padding:10px 0;color:#00ff88;">🤖 Trade For Me</a>
+      <a href="dashboard.html" style="display:block;padding:10px 0;color:#00ff88;">📊 Dashboard</a>
+      <a href="about.html" style="display:block;padding:10px 0;color:#00ff88;">📝 About</a>
+      <a href="copy.html" style="display:block;padding:10px 0;color:#00ff88;">📋 Copy Code</a>
+      <a href="#" id="nav-modal-close" style="display:block;padding:10px 0;margin-top:8px;color:#ff4757;">Close</a>
+    </div>
+  </div>
+  <script>
+    document.getElementById('nav-trade').onclick = () => window.location.href = "trade.html";
+    document.getElementById('nav-menu').onclick = () => document.getElementById('nav-modal').style.display = "flex";
+    document.getElementById('nav-modal-close').onclick = (e) => { e.preventDefault(); document.getElementById('nav-modal').style.display = "none"; };
+    document.getElementById('nav-modal').onclick = function(e) { if(e.target === this) this.style.display = "none"; };
+  </script>
+</body>
+  </html>
