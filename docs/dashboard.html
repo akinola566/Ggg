@@ -10,7 +10,7 @@
     body { background: #181c22; font-family: 'Poppins',sans-serif; padding-bottom: 80px; }
     .main-container { max-width: 480px; margin: 48px auto 0 auto; }
     .dashboard-card {
-      background: rgba(44, 62, 80, 0.90);
+      background: rgba(44, 62, 80, 0.94);
       border-radius: 20px;
       box-shadow: 0 4px 32px #0004;
       padding: 32px 24px 26px 24px;
@@ -18,8 +18,57 @@
       color: #fff;
     }
     .dashboard-card h2 { color:#00ff88; margin-top:0; }
-    .profile-row { margin:16px 0 10px 0; }
-    .profile-input { width:70%; padding:8px 12px; border-radius:8px; border:1px solid #333; margin-right:8px; background:#23272f; color:#fff;}
+    .profile-avatar {
+      width: 88px;
+      height: 88px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin: 0 auto 12px auto;
+      display: block;
+      border: 3px solid #00ff88;
+      background: #23272f;
+    }
+    .profile-upload-label {
+      display: inline-block;
+      margin-bottom: 10px;
+      color: #42a1fa;
+      font-size: 0.97em;
+      cursor: pointer;
+      font-weight: 500;
+      transition: color .18s;
+    }
+    .profile-upload-label:hover { color: #00ff88; }
+    .profile-name-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .profile-name-display {
+      font-size: 1.3em;
+      font-weight: 700;
+      color: #fff;
+      margin: 0;
+    }
+    .profile-edit-btn {
+      font-size: 1em;
+      padding: 5px 15px;
+      border-radius: 7px;
+      background: #23272f;
+      color: #00ff88;
+      border: 1px solid #00ff88;
+      cursor: pointer;
+      transition: background .18s, color .18s;
+    }
+    .profile-edit-btn:hover {
+      background: #00ff88;
+      color: #23272f;
+    }
+    .profile-input-row { display: flex; align-items: center; gap: 10px; justify-content: center;}
+    .profile-input {
+      width: 70%; padding: 8px 12px; border-radius:8px; border:1px solid #333; background:#23272f; color:#fff; font-size:1.08em;
+    }
     .neon-btn { min-width: 50px;}
     .stats-table { width:100%; margin-top: 10px; font-size:1.04em; }
     .stats-table th, .stats-table td { padding: 10px 7px; border-bottom:1px solid #444;}
@@ -33,13 +82,15 @@
 </head>
 <body>
   <div class="main-container">
-    <div class="dashboard-card">
-      <h2>👤 User Profile</h2>
-      <div class="profile-row">
-        <input type="text" id="profile-name" placeholder="Enter your name" class="profile-input">
-        <button id="save-profile" class="neon-btn start-btn" style="margin-left:2px;">Save</button>
+    <div class="dashboard-card" id="profile-card">
+      <h2 style="margin-bottom:10px;">👤 User Profile</h2>
+      <img src="" id="profile-avatar" alt="Profile Picture" class="profile-avatar" />
+      <label for="profile-upload" class="profile-upload-label" id="profile-upload-label">Upload Photo</label>
+      <input type="file" id="profile-upload" accept="image/*" style="display:none;">
+      <div id="profile-name-section">
+        <!-- Name input and buttons will be rendered here -->
       </div>
-      <div id="profile-msg" style="margin-top:5px;color:#00ff88;"></div>
+      <div id="profile-msg" style="margin-top:5px;color:#00ff88;min-height:18px;"></div>
     </div>
     <div class="dashboard-card">
       <h2>📈 Trading Stats</h2>
@@ -71,28 +122,78 @@
     </div>
   </div>
   <script>
-    // Navigation bar logic
+    // NAV BAR
     document.getElementById('nav-trade').onclick = () => window.location.href = "trade.html";
     document.getElementById('nav-menu').onclick = () => document.getElementById('nav-modal').style.display = "flex";
     document.getElementById('nav-modal-close').onclick = (e) => { e.preventDefault(); document.getElementById('nav-modal').style.display = "none"; };
     document.getElementById('nav-modal').onclick = function(e) { if(e.target === this) this.style.display = "none"; };
 
-    // Profile logic
+    // PROFILE & AVATAR LOGIC
     const PROFILE_KEY = "profile_name";
+    const AVATAR_KEY = "profile_avatar";
     function saveProfile(name){
       localStorage.setItem(PROFILE_KEY, name);
-      document.getElementById("profile-msg").textContent = "Profile saved!";
+      renderProfileName();
+      showProfileMsg("Profile saved!");
     }
     function getProfile(){
       return localStorage.getItem(PROFILE_KEY)||"";
     }
-    document.getElementById("save-profile").onclick = function(){
-      let v = document.getElementById("profile-name").value.trim();
-      saveProfile(v);
+    function showProfileMsg(msg) {
+      document.getElementById("profile-msg").textContent = msg;
+      setTimeout(() => { document.getElementById("profile-msg").textContent = ""; }, 1800);
+    }
+    function renderProfileName(editing=false){
+      const sec = document.getElementById("profile-name-section");
+      sec.innerHTML = "";
+      if(!editing){
+        let name = getProfile();
+        if(name){
+          sec.innerHTML = `<div class="profile-name-row">
+            <span class="profile-name-display">${name}</span>
+            <button class="profile-edit-btn" id="edit-name-btn">Change Name</button>
+          </div>`;
+          document.getElementById("edit-name-btn").onclick = ()=>renderProfileName(true);
+        } else {
+          renderProfileName(true);
+        }
+      } else {
+        let curr = getProfile();
+        sec.innerHTML = `<div class="profile-input-row">
+          <input type="text" id="profile-name-input" class="profile-input" placeholder="Enter your name" value="${curr||""}">
+          <button class="neon-btn start-btn" id="save-profile-btn">Save</button>
+        </div>`;
+        document.getElementById("save-profile-btn").onclick = ()=>{
+          let v = document.getElementById("profile-name-input").value.trim();
+          if(v) saveProfile(v);
+        };
+      }
+    }
+    function renderAvatar(){
+      let url = localStorage.getItem(AVATAR_KEY);
+      const img = document.getElementById("profile-avatar");
+      img.src = url ? url : "https://ui-avatars.com/api/?name=User&background=23272f&color=00ff88&size=128&rounded=true";
+    }
+    document.getElementById("profile-upload").onchange = function(e){
+      const file = e.target.files[0];
+      if(file && file.type.startsWith("image/")){
+        const reader = new FileReader();
+        reader.onload = function(evt){
+          localStorage.setItem(AVATAR_KEY, evt.target.result);
+          renderAvatar();
+          showProfileMsg("Photo updated!");
+        };
+        reader.readAsDataURL(file);
+      }
     };
-    document.getElementById("profile-name").value = getProfile();
+    document.getElementById("profile-upload-label").onclick = function(){
+      document.getElementById("profile-upload").click();
+    };
+    // Initial render
+    renderAvatar();
+    renderProfileName();
 
-    // Stats
+    // STATS
     const TRADE_HISTORY_KEY = "trade_history";
     function getTradeHistory(){ return JSON.parse(localStorage.getItem(TRADE_HISTORY_KEY)||"[]"); }
     function updateStats(){
