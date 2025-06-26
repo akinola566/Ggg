@@ -9,15 +9,30 @@
   <style>
     body { background: #181c22; font-family: 'Poppins',sans-serif; padding-bottom: 80px; }
     .main-container { max-width: 420px; margin: 44px auto 0 auto; }
-    .trade-card {
+    .trade-card, .chart-card {
       background: rgba(44, 62, 80, 0.86);
       border-radius: 20px;
       box-shadow: 0 4px 32px #0004;
-      padding: 32px 24px 28px 24px;
-      margin-bottom: 28px;
       color: #fff;
+      margin-bottom: 28px;
     }
-    .trade-card h1, .trade-card h2 { margin-top: 0; color: #00ff88; }
+    .trade-card { padding: 32px 24px 28px 24px; }
+    .chart-card { padding: 18px 12px 14px 12px; text-align: center; animation: fadeInUp .7s cubic-bezier(.23,1.02,.36,1.03);}
+    @keyframes fadeInUp {
+      from { transform: translateY(32px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    .chart-title { color: #42a1fa; margin-bottom: 10px; font-weight: 700; letter-spacing: .03em;}
+    .chart-frame-wrap {
+      width: 100%; min-height: 260px; border-radius: 14px; overflow: hidden; background: #23272f; border:1.5px solid #00ff88;
+      box-shadow: 0 2px 12px #0006;
+      transition: box-shadow .25s;
+    }
+    .chart-frame-wrap:focus-within, .chart-frame-wrap:hover { box-shadow: 0 4px 24px #00ff8866; }
+    iframe.tradingview-iframe {
+      width: 100%; height: 280px; border: 0; background: #23272f;
+      transition: filter .3s;
+    }
     .trade-label { font-weight: 600; margin-bottom: 8px; display:inline-block;}
     .trade-input, .trade-select {
       width: 90%; padding: 10px 14px; border-radius: 8px; border: 1px solid #333; font-size: 1em; margin-bottom: 16px; background: #23272f; color: #fff;
@@ -33,12 +48,24 @@
     .history-table th, .history-table td { padding: 7px 4px; border-bottom: 1px solid #444; }
     @media (max-width:600px) {
       .main-container { max-width:99vw; padding: 0 0.5em; }
-      .trade-card { padding: 20px 6vw 18px 6vw; }
+      .trade-card, .chart-card { padding: 16px 4vw 12px 4vw; }
+      .chart-frame-wrap { min-height: 200px; }
+      iframe.tradingview-iframe { height: 200px;}
     }
   </style>
 </head>
 <body>
   <div class="main-container">
+    <!-- TradingView Chart Card -->
+    <div class="chart-card" id="chart-card">
+      <div class="chart-title" id="chart-title">Live Chart: BTCUSDT</div>
+      <div class="chart-frame-wrap">
+        <iframe id="chart-iframe"
+          class="tradingview-iframe"
+          src="https://www.tradingview.com/widgetembed/?symbol=BINANCE:BTCUSDT&interval=60&hidesidetoolbar=1&symboledit=1&saveimage=1&toolbarbg=f1f3f6&studies=[]&theme=dark&style=1&timezone=Etc/UTC&utm_source=blackonstar"
+          allowtransparency="true" scrolling="no"></iframe>
+      </div>
+    </div>
     <div class="trade-card">
       <h1 style="font-size:2em;">🤖 Trade For Me</h1>
       <div id="trade-status"></div>
@@ -90,11 +117,23 @@
     </div>
   </div>
   <script>
-    // Navigation bar logic
+    // Hamburger Menu logic
     document.getElementById('nav-trade').onclick = () => window.location.href = "trade.html";
     document.getElementById('nav-menu').onclick = () => document.getElementById('nav-modal').style.display = "flex";
     document.getElementById('nav-modal-close').onclick = (e) => { e.preventDefault(); document.getElementById('nav-modal').style.display = "none"; };
     document.getElementById('nav-modal').onclick = function(e) { if(e.target === this) this.style.display = "none"; };
+
+    // Dynamic TradingView Chart logic
+    const chartIframe = document.getElementById("chart-iframe");
+    const chartTitle = document.getElementById("chart-title");
+    const assetSelect = document.getElementById("trade-asset");
+    function updateChart() {
+      let asset = assetSelect.value;
+      let symbol = (asset === "BTC") ? "BINANCE:BTCUSDT" : "BINANCE:USDTBUSD";
+      chartIframe.src = `https://www.tradingview.com/widgetembed/?symbol=${encodeURIComponent(symbol)}&interval=60&hidesidetoolbar=1&symboledit=1&saveimage=1&toolbarbg=f1f3f6&studies=[]&theme=dark&style=1&timezone=Etc/UTC&utm_source=blackonstar`;
+      chartTitle.textContent = `Live Chart: ${symbol.replace("BINANCE:","")}`;
+    }
+    assetSelect.onchange = updateChart;
 
     // Trade For Me logic
     const TRADE_KEY = "active_advanced_trade";
@@ -216,6 +255,8 @@
     document.getElementById("stop-trade-btn").onclick = function(){ stopTrade(); };
     // Restore on load
     window.addEventListener("DOMContentLoaded", ()=>{
+      // Show chart for initial asset
+      updateChart();
       tradeState = getTradeState();
       if(tradeState && tradeState.running){
         updateTradePanel(); startTradeTimer();
@@ -242,4 +283,4 @@
     });
   </script>
 </body>
-</html>
+          </html>
