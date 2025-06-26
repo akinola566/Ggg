@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>📋 Copy Code - OanderTradebot</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    body { background: #181c22; color: #fff; font-family: 'Poppins', sans-serif; padding-bottom: 80px; }
+    .container { max-width: 420px; margin: 44px auto 0 auto; background: rgba(44,62,80,0.93); border-radius: 20px; box-shadow: 0 4px 32px #0004; padding: 32px 22px 30px 22px;}
+    h1 { color: #00ff88; font-size: 2em; margin-bottom: 12px;}
+    .address-box { background: #23272f; font-size: 1.15em; border-radius: 12px; padding: 14px; word-break: break-all; margin: 16px 0; border: 1.5px solid #00ff88;}
+    .copy-btn { background: #00ff88; color: #23272f; border: none; border-radius: 8px; padding: 7px 18px; font-weight: 600; cursor:pointer; margin-left: 6px;}
+    .step { margin: 18px 0 6px 0; }
+    .file-upload { margin: 18px 0; }
+    .send-btn { background: #42a1fa; color:#fff; border: none; border-radius: 8px; padding: 9px 22px; font-weight: 600; cursor:pointer; font-size: 1.08em; }
+    .info { color: #ffa500; margin: 15px 0 8px 0;}
+    .success { color: #00ff88; margin: 12px 0;}
+    .error { color: #ff4757; }
+    @media (max-width:600px) { .container{max-width:97vw;} }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📋 Copy Code</h1>
+    <div>To copy the code, you need to make a payment of <b>$100 USDT (BEP20)</b>.</div>
+    <div class="step">1. Send payment to the wallet address below:</div>
+    <div class="address-box" id="usdt-address">
+      0x1234abcd5678efgh9012ijklmnopqrstuvwx3456
+      <button class="copy-btn" onclick="copyAddress()">Copy</button>
+    </div>
+    <div class="step">2. After payment, click the button below:</div>
+    <button class="send-btn" onclick="showUpload()">I have transferred</button>
+    <div id="upload-section" style="display:none;">
+      <div class="info">Upload a screenshot of your payment as confirmation:</div>
+      <input type="file" id="screenshot" accept="image/*" class="file-upload"><br>
+      <button class="send-btn" style="margin-top:15px;" onclick="sendToWhatsapp()">Send Screenshot & Contact Support</button>
+      <div class="info" style="font-size:0.93em;">You will be redirected to WhatsApp for confirmation.</div>
+    </div>
+    <div id="copy-success" class="success"></div>
+  </div>
+  <!-- Bottom Navigation Bar -->
+  <nav id="bottom-nav" style="position:fixed;left:0;right:0;bottom:0;height:60px;background:rgba(30,34,40,0.98);box-shadow:0 -2px 16px #0003;display:flex;align-items:center;justify-content:space-evenly;z-index:2000;">
+    <button id="nav-trade" title="Trade For Me" style="background:none;border:none;outline:none;font-size:2em;color:#00ff88;">🤖</button>
+    <button id="nav-menu" title="Menu" style="background:none;border:none;outline:none;font-size:2em;color:#fff;">&#9776;</button>
+  </nav>
+  <div id="nav-modal" style="display:none;position:fixed;left:0;top:0;width:100vw;height:100vh;z-index:2100;
+    background:rgba(0,0,0,0.65);align-items:flex-end;justify-content:center;">
+    <div style="background:#23272f;color:#fff;width:100vw;max-width:350px;margin:auto;border-radius:18px 18px 0 0;padding:32px 0 24px 0;text-align:center;box-shadow:0 -2px 16px #0006;">
+      <h2 style="margin-bottom:18px;">Menu</h2>
+      <a href="index.html" style="display:block;padding:10px 0;color:#00ff88;">🏠 Home</a>
+      <a href="trade.html" style="display:block;padding:10px 0;color:#00ff88;">🤖 Trade For Me</a>
+      <a href="dashboard.html" style="display:block;padding:10px 0;color:#00ff88;">📊 Dashboard</a>
+      <a href="about.html" style="display:block;padding:10px 0;color:#00ff88;">📝 About</a>
+      <a href="copy.html" style="display:block;padding:10px 0;color:#00ff88;">📋 Copy Code</a>
+      <a href="#" id="nav-modal-close" style="display:block;padding:10px 0;margin-top:8px;color:#ff4757;">Close</a>
+    </div>
+  </div>
+  <script>
+    function copyAddress() {
+      const addr = document.getElementById("usdt-address").innerText.trim();
+      navigator.clipboard.writeText(addr.replace(/Copy$/, "").trim());
+      document.getElementById("copy-success").innerText = "Address copied!";
+      setTimeout(function(){ document.getElementById("copy-success").innerText=""; }, 1600);
+    }
+    function showUpload() {
+      document.getElementById("upload-section").style.display = "block";
+    }
+    function sendToWhatsapp() {
+      // Grab file name if uploaded (optional)
+      var input = document.getElementById("screenshot");
+      var fileGiven = input.files && input.files.length>0 ? "Screenshot attached" : "No screenshot attached";
+      var msg = encodeURIComponent(
+        `Hello, I want to send a screenshot from OanderTradebot that I have made payment to copy code. ${fileGiven}\nMy details:\n[Your Name or Email here]\n\nPlease check and send me the code.`
+      );
+      window.open("https://wa.me/2348100096815?text="+msg, "_blank");
+    }
+    // Nav bar logic
+    document.getElementById('nav-trade').onclick = () => window.location.href = "trade.html";
+    document.getElementById('nav-menu').onclick = () => document.getElementById('nav-modal').style.display = "flex";
+    document.getElementById('nav-modal-close').onclick = (e) => { e.preventDefault(); document.getElementById('nav-modal').style.display = "none"; };
+    document.getElementById('nav-modal').onclick = function(e) { if(e.target === this) this.style.display = "none"; };
+  </script>
+</body>
+  </html>
